@@ -1,0 +1,349 @@
+
+<html>
+  <head>
+    <title>Find Broker.1</title>
+    <script src ='https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+      /*changing font/formatting */
+      body {
+          background-color: #00FFFF;
+          font-family: Arial, sans-serif;
+          color: #006400; /* Text color */
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          height: 100vh;
+      }
+      .heading {
+          color: #008B8B; /* Heading color */
+      }
+    </style>
+  
+  
+  </head>
+  <body>
+    <h1 id="heading">Brokers</h1>
+    <div> <button id="createBrokerButton" onclick="showCreate()">Create</button></div>
+    <div>
+      <table class="table table-striped" id="brokerTable" border="1" >
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Address</th>
+          <th>County</th>
+          <th>Phone</th>
+          <th>Web</th>
+          <th>Update</th>
+          <th>Delete</th>
+        </tr>
+        
+      </table>
+      
+    </div>
+    <div>     
+
+        <div id='createUpdateForm' style="display: none">
+          <h2><span id="createLabel">Create a</span> <span id="updateLabel">Update</span> Broker</h2>
+          <input type="hidden" name="id"/>
+          Name <input type="text" name="name" /><br/>
+          Address <input type="text" name="address"/> <br/>
+
+          <label for="county">Choose a County</label>  
+          County <select id="county" name="county"/>
+            <option value ="Antrim">Antrim</option> 
+            <option value ="Armagh">Armagh</option>
+            <option value ="Carlow">Carlow</option>
+            <option value ="Cavan">Cavan</option>
+            <option value ="Clare">Clare</option>
+            <option value ="Cork">Cork</option>
+            <option value ="Derry">Derry</option>
+            <option value ="Donegal">Donegal</option>
+            <option value ="Down">Down</option>
+            <option value ="North Dublin">North Dublin</option>
+            <option value ="South Dublin">South Dublin</option>
+            <option value ="Dublin City">Dublin City</option>
+            <option value ="Fermanagh">Fermanagh</option>
+            <option value ="Galway">Galway</option>
+            <option value ="Kerry">Kerry</option>
+            <option value ="Kildare">Kildare</option>
+            <option value ="Kilkenny">Kilkenny</option>
+            <option value ="Laois">Laois</option>
+            <option value ="Leitrim">Leitrim</option>
+            <option value ="Limerick">Limerick</option>
+            <option value ="Longford">Longford</option>
+            <option value ="Louth">Louth</option>
+            <option value ="Mayo">Mayo</option>
+            <option value ="Meath">Meath</option>
+            <option value ="Monaghan">Monaghan</option>
+            <option value ="Offaly">Offaly</option>
+            <option value ="Roscommmon">Roscommmon</option>
+            <option value ="Sligo">Sligo</option>
+            <option value ="Tipperary">Tipperary</option>
+            <option value ="Waterford">Waterford</option>
+            <option value ="Westmeath">Westmeath</option>
+            <option value ="Wexford">Wexford</option>
+            <option value ="Wicklow">Wicklow</option>
+            
+
+        </select><br/>
+
+        Phone <input type="number" name="phone"/> <br/>
+        Web <input type="text" name="web"/> <br/>
+        <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
+        <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
+        </div>
+
+  <body>
+  
+  <script>
+    function showCreate(){
+      document.getElementById('heading').style.display="none"
+      document.getElementById('createBrokerButton').style.display="none"
+      document.getElementById('brokerTable').style.display="none"
+      document.getElementById('createUpdateForm').style.display="block"
+  
+      document.getElementById('createLabel').style.display="inline"
+      document.getElementById('updateLabel').style.display="none"
+  
+      document.getElementById('doCreateButton').style.display="block"
+      document.getElementById('doUpdateButton').style.display="none"
+  
+      }
+    
+    //hides update form and diplays table
+    function showViewAll(){
+      document.getElementById('createBrokerButton').style.display="block"
+      document.getElementById('brokerTable').style.display="block"
+      document.getElementById('createUpdateForm').style.display="none"
+      document.getElementById('heading').style.display="block"
+      }
+    
+    function showUpdate(buttonElement){
+      
+      var rowElement = buttonElement.parentNode.parentNode //find the row from the button
+      console.log("testing showUpdate", rowElement)
+      var broker = getBrokerFromRow(rowElement) //get the curretn values from the row
+      populateFormWithBroker(broker) // display current values in form
+
+      document.getElementById('createBrokerButton').style.display="none"
+      document.getElementById('brokerTable').style.display="none"
+      document.getElementById('createUpdateForm').style.display="block"
+      document.getElementById('heading').style.display="none"
+  
+      document.getElementById('createLabel').style.display="none"
+      document.getElementById('updateLabel').style.display="inline"
+  
+      document.getElementById('doCreateButton').style.display="none"
+      document.getElementById('doUpdateButton').style.display="block"
+
+      
+    }
+      
+    function doCreate(){
+      var form = document.getElementById('createUpdateForm')
+
+      var broker = {}
+       
+      broker.Name = form.querySelector('input[name="name"]').value
+      broker.Address = form.querySelector('input[name="address"]').value
+      broker.County = form.querySelector('select[name="county"]').value
+      broker.Phone = form.querySelector('input[name="phone"]').value
+      broker.Web = form.querySelector('input[name="web"]').value
+      console.log(JSON.stringify(broker))
+      createBrokerAjax(broker)
+
+    }  
+    function doUpdate(){
+      var broker = getBrokerFromForm();
+      //console.log("testing doUpdate", broker)
+      var rowElement = document.getElementById(broker.ID);
+      //console.log("testing doUpdate", rowElement)
+      updateBrokerAjax(broker);
+      setBrokerInRow(rowElement,broker);
+       
+      clearForm();
+      showViewAll();
+
+    }
+    function doDelete(r){
+        var tableElement = document.getElementById('brokerTable');
+        var rowElement = r.parentNode.parentNode;
+        var index = rowElement.rowIndex;
+        deleteBrokerAjax(rowElement.getAttribute("id"));
+        tableElement.deleteRow(index);
+    }   
+
+    function addBrokerToTable(broker){
+      console.log("adding broker to table:", broker) //table wasnt populating correctly. needed to check what this was producing
+      var tableElement = document.getElementById('brokerTable');
+      var rowElement = tableElement.insertRow(-1);
+      console.log("testing addBrokerToTable", rowElement)
+      rowElement.setAttribute('ID', broker.ID)
+
+      var cell1 = rowElement.insertCell(0);
+      cell1.innerHTML = broker.ID
+      
+      var cell2 = rowElement.insertCell(1);
+      cell2.innerHTML = broker.Name
+      
+      var cell3 = rowElement.insertCell(2);
+      cell3.innerHTML = broker.Address
+      
+      var cell4 = rowElement.insertCell(3);
+      cell4.innerHTML = broker.County
+      
+      var cell5 = rowElement.insertCell(4);
+      cell5.innerHTML = broker.Phone
+      
+      var cell6 = rowElement.insertCell(5);
+      cell6.innerHTML = broker.Web
+      
+      var cell7 = rowElement.insertCell(6);
+      cell7.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+      
+      var cell8 = rowElement.insertCell(7);
+      cell8.innerHTML = '<button onclick=doDelete(this)>Delete</button>'
+
+    }
+
+    function clearForm(){
+        var form = document.getElementById('createUpdateForm')
+
+        form.querySelector('input[name="name"]').value=''
+        form.querySelector('input[name="address"]').value=''
+        form.querySelector('select[name="county"]').value=''
+        form.querySelector('input[name="phone"]').value=''
+        form.querySelector('input[name="web"]').value=''
+    }
+
+    //probably dont need this one
+    function getBrokerFromRow(rowElement){
+        var broker ={}
+        broker.ID  = rowElement.getAttribute('id')
+        broker.Name = rowElement.cells[1].firstChild.textContent
+        broker.Address = rowElement.cells[2].firstChild.textContent
+        broker.County = rowElement.cells[3].firstChild.textContent
+        broker.Phone = parseInt(rowElement.cells[4].firstChild.textContent,10)
+        broker.Web = rowElement.cells[5].firstChild.textContent
+        return broker
+    }
+
+    function setBrokerInRow(rowElement, broker){
+        rowElement.cells[0].firstChild.textContent= broker.ID
+        rowElement.cells[1].firstChild.textContent= broker.Name 
+        rowElement.cells[2].firstChild.textContent= broker.Address
+        rowElement.cells[3].firstChild.textContent= broker.County
+        rowElement.cells[4].firstChild.textContent= broker.Phone
+        rowElement.cells[5].firstChild.textContent= broker.Web
+    }
+    function populateFormWithBroker(broker){
+        var form = document.getElementById('createUpdateForm')
+        form.querySelector('input[name="id"]').disabled = true
+
+        form.querySelector('input[name="id"]').value  = broker.ID
+        form.querySelector('input[name="name"]').value= broker.Name 
+        form.querySelector('input[name="address"]').value= broker.Address
+        form.querySelector('select[name="county"]').value= broker.County
+        form.querySelector('input[name="phone"]').value= broker.Phone
+        form.querySelector('input[name="web"]').value= broker.Web
+        return broker
+    }
+    function getBrokerFromForm(){
+        var form = document.getElementById('createUpdateForm')
+        var broker = {}
+        broker.ID = form.querySelector('input[name="id"]').value
+        broker.Name = form.querySelector('input[name="name"]').value
+        broker.Address = form.querySelector('input[name="address"]').value
+        broker.County = form.querySelector('select[name="county"]').value
+        broker.Phone = parseInt(form.querySelector('input[name="phone"]').value,10)
+        broker.Web = form.querySelector('input[name="web"]').value
+        console.log(JSON.stringify(broker))
+        return broker
+    }
+    function getAllAjax(){
+        $.ajax({
+            "url": "/brokers",
+            "method":"GET",
+            "data":"",
+            "dataType": "JSON",
+            "success":function(result){
+                // console.log(result);
+                for (broker of result){
+                  addBrokerToTable(broker);
+                }
+                
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+
+    }
+    function createBrokerAjax(broker){
+        //var broker = {"name":"yoto", "address":"momo","county":"sadasd", "phone": 0126548, "web":"momo}
+        // console.log("testing createBrokerAjax", JSON.stringify(broker));
+        $.ajax({
+            "url": "/brokers",
+            "method":"POST",
+            "data":JSON.stringify(broker),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                console.log(result);
+                broker.ID = result.ID
+                // console.log("testing ID ", broker.ID)
+                addBrokerToTable(broker)
+                clearForm()
+                showViewAll()
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function updateBrokerAjax(broker){
+        //var broker = {"name":"yoto", "address":"momo","county": "sadasd", "phone": 0126548, "web":"momo}
+        console.log(JSON.stringify(broker));
+        $.ajax({
+            "url": "/brokers/"+encodeURI(broker.id),
+            "method":"PUT",
+            "data":JSON.stringify(broker),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+               // console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+
+    function deleteBrokerAjax(id){
+        
+        //console.log(JSON.stringify('deleting '+id));
+        $.ajax({
+            "url": "/brokers/"+encodeURI(id),
+            "method":"DELETE",
+            "data":"",
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    getAllAjax();
+  
+
+    
+    </script>
+</html>
+

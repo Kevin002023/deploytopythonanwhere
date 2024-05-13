@@ -1,0 +1,152 @@
+<html>
+  <head>
+    <title>Find Broker.1</title>
+    <script src ='https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+      /*changing font/formatting */
+      body {
+          background-color: #00FFFF;
+          font-family: Arial, sans-serif;
+          color: #006400; /* Text color */
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          height: 100vh;
+      }
+      .heading {
+          color: #008B8B; /* Heading color */
+      }
+    </style>
+  
+  
+  </head>
+  <body>
+    <div> <button id="createBrokerButton" onclick="showCreate()" style= "display: none">Create</button></div>
+    <h1 id="heading" style="display: none">Brokers in Your County</h1>
+    <h1 id="findbroker" style="display: block">Find a Broker Near You</h1>
+    
+    <div>
+      <table class="table table-striped" id="brokerTable" border="1" style="display: none";>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Address</th>
+          <th>County</th>
+          <th>Phone</th>
+          <th>Web</th>
+        </tr>
+        
+      </table>
+      
+    </div>
+    <div id="dropdown">
+      <label for="county">Where do you live?</label>  
+           <select id="county" name="county" onchange="findBroker()"/>
+            <option selected>Choose Your County</option>
+            <option value ="Antrim">Antrim</option> 
+            <option value ="Armagh">Armagh</option>
+            <option value ="Carlow">Carlow</option>
+            <option value ="Cavan">Cavan</option>
+            <option value ="Clare">Clare</option>
+            <option value ="Cork">Cork</option>
+            <option value ="Derry">Derry</option>
+            <option value ="Donegal">Donegal</option>
+            <option value ="Down">Down</option>
+            <optgroup label = "Dublin">
+              <option value ="North Dublin">North Dublin</option>
+              <option value ="South Dublin">South Dublin</option>
+              <option value ="Dublin City">Dublin City</option>
+            </optgroup>
+            <option value ="Fermanagh">Fermanagh</option>
+            <option value ="Galway">Galway</option>
+            <option value ="Kerry">Kerry</option>
+            <option value ="Kildare">Kildare</option>
+            <option value ="Kilkenny">Kilkenny</option>
+            <option value ="Laois">Laois</option>
+            <option value ="Leitrim">Leitrim</option>
+            <option value ="Limerick">Limerick</option>
+            <option value ="Longford">Longford</option>
+            <option value ="Louth">Louth</option>
+            <option value ="Mayo">Mayo</option>
+            <option value ="Meath">Meath</option>
+            <option value ="Monaghan">Monaghan</option>
+            <option value ="Offaly">Offaly</option>
+            <option value ="Roscommmon">Roscommmon</option>
+            <option value ="Sligo">Sligo</option>
+            <option value ="Tipperary">Tipperary</option>
+            <option value ="Waterford">Waterford</option>
+            <option value ="Westmeath">Westmeath</option>
+            <option value ="Wexford">Wexford</option>
+            <option value ="Wicklow">Wicklow</option>
+            
+
+        </select placeholder="Your County"><br/>
+    </div>
+  </body>
+
+  <script>
+    function findBroker(){
+      // console.log("testing findBroker")
+      document.getElementById('heading').style.display="block"
+      document.getElementById('findbroker').style.display="none"
+      document.getElementById('brokerTable').style.display="block"
+      document.getElementById('dropdown').style.display="none"
+
+      var userCounty =document.getElementById('county').value
+      console.log(userCounty) //testing its working
+
+      getBrokerAjax(userCounty);   
+    }
+    
+    function addBrokerToTable(broker){
+      console.log("adding broker to table:", broker) //table wasnt populating correctly. needed to check what this was producing
+      
+      var tableElement = document.getElementById('brokerTable');
+      var rowElement = tableElement.insertRow(-1);
+      console.log("testing addBrokerToTable", rowElement)
+      rowElement.setAttribute('ID', broker.ID)
+
+      var cell1 = rowElement.insertCell(0);
+      cell1.innerHTML = broker.ID
+      
+      var cell2 = rowElement.insertCell(1);
+      cell2.innerHTML = broker.Name
+      
+      var cell3 = rowElement.insertCell(2);
+      cell3.innerHTML = broker.Address
+      
+      var cell4 = rowElement.insertCell(3);
+      cell4.innerHTML = broker.County
+      
+      var cell5 = rowElement.insertCell(4);
+      cell5.innerHTML = broker.Phone
+      
+      var cell6 = rowElement.insertCell(5);
+      cell6.innerHTML = broker.Web
+      
+
+    }
+
+    function getBrokerAjax(userCounty){
+        $.ajax({
+            "url": "/find_my_broker", // pass the county parameter through the ajax query
+            "method":"GET",
+            "data":{county: userCounty},
+            "dataType": "JSON",
+            "success":function(result){
+                console.log("broker data" + result);
+                result.forEach(function(broker) {
+                  addBrokerToTable(broker);
+                });
+                
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+
+    } 
+    </script>
+
