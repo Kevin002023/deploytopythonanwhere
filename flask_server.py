@@ -12,7 +12,7 @@ def index():
     return """
     <html>
     <head>
-        <title>Landing Page</title>
+        <title>O'Leary Insurance</title>
         <style>
             /*changing font/formatting */
             body {
