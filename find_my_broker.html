@@ -14,6 +14,7 @@
           flex-direction: column;
           justify-content: flex-start;
           height: 100vh;
+          
       }
       .heading {
           color: #008B8B; /* Heading color */
@@ -23,6 +24,12 @@
   
   </head>
   <body>
+
+    <h1 class="fw-bolder">O'Leary Insurance Ltd</h1>
+    <br/>
+    <br/>
+    <br/>
+
     <div> <button id="createBrokerButton" onclick="showCreate()" style= "display: none">Create</button></div>
     <h1 id="heading" style="display: none">Brokers in Your County</h1>
     <h1 id="findbroker" style="display: block">Find a Broker Near You</h1>
@@ -84,6 +91,8 @@
 
         </select placeholder="Your County"><br/>
     </div>
+
+    <div id="message"></div>
   </body>
 
   <script>
@@ -137,9 +146,17 @@
             "dataType": "JSON",
             "success":function(result){
                 console.log("broker data" + result);
+                var tableElement = document.getElementById('brokerTable');
+
+                //Display an error message if there are no results and hide table
+                if(result.length === 0){
+                  document.getElementById('message').innerText = "Unfortunately at this time we have no brokers in your County. Perhaps refresh the page and try again with a neighbouring county. "
+                  tableElement.style.display ="none"
+                } else {
                 result.forEach(function(broker) {
                   addBrokerToTable(broker);
-                });
+                  });
+                }
                 
             },
             "error":function(xhr,status,error){
