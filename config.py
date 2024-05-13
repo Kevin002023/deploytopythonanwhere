@@ -2,8 +2,8 @@
 # Kevin
 
 mysql = {
-    'host':"localhost",
-    'user':"root",
-    'password':"root",
-    'database':"brokers"
+    'host':"koleary24.mysql.pythonanywhere-services.com",
+    'user':"koleary24",
+    'password':"Webapplications2024",
+    'database':"koleary24$Broker_Database"
 }
