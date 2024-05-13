@@ -27,9 +27,11 @@ def index():
             }
             .heading {
                 color: #008B8B; /* Heading color */
+                font-size: 35px;
+                line-height: 2;
             }
             .content {
-                font-size: 16px;
+                font-size: 20px;
                 line-height: 1.6;
             }
         </style>
